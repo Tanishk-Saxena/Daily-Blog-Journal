@@ -67,12 +67,27 @@ app.get("/compose", function(req, res){
   res.render("compose");
 });
 
-app.get("/posts/:topic", function(req, res){
-  const postDay = req.params.topic;
-  entries.forEach(function(entry){
-    if(_.lowerCase(postDay) === _.lowerCase(entry.blogTitle)){
+// app.get("/posts/:topic", function(req, res){
+//   const postDay = req.params.topic;
+//   entries.forEach(function(entry){
+//     if(_.lowerCase(postDay) === _.lowerCase(entry.blogTitle)){
+//       res.render("post", {
+//         postDay: entry
+//       });
+//     }
+//   });
+// });
+
+app.get("/posts/:topic", function (req, res) {
+  const postId = req.params.topic;
+  Blog.findOne({_id: postId}, function (err, blog) {
+    if(err){
+      console.log(err);
+    }else if(blog === null){
+      res.redirect("/");
+    }else{
       res.render("post", {
-        postDay: entry
+        post: blog
       });
     }
   });

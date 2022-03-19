@@ -11,8 +11,10 @@ const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pelle
 const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rhoncus urna neque viverra justo nec ultrices. Arcu dui vivamus arcu felis bibendum. Consectetur adipiscing elit duis tristique. Risus viverra adipiscing at in tellus integer feugiat. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Consequat interdum varius sit amet mattis. Iaculis nunc sed augue lacus. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing elit. Pulvinar elementum integer enim neque. Ultrices gravida dictum fusce ut placerat orci nulla. Mauris in aliquam sem fringilla ut morbi tincidunt. Tortor posuere ac ut consequat semper viverra nam libero.";
 const url = "mongodb://localhost:27017/blogDB";
 
+mongoose.connect(url, {useNewUrlParser: true});
+
 const blogSchema = new mongoose.Schema({
-  title: {
+  blogTitle: {
     type: String,
     required: true
   },
@@ -29,10 +31,23 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-app.get("/", function(req, res){
-  res.render("home", {
-    homeStartingContent: homeStartingContent,
-    entries: entries,
+// app.get("/", function(req, res){
+//   res.render("home", {
+//     homeStartingContent: homeStartingContent,
+//     entries: entries,
+//   });
+// });
+
+app.get("/", function (req, res) {
+  Blog.find({}, function (err, blogs) {
+    if(err){
+      console.log(err);
+    }else{
+      res.render("home", {
+        homeStartingContent: homeStartingContent,
+        entries: blogs
+      });
+    }
   });
 });
 
@@ -63,19 +78,24 @@ app.get("/posts/:topic", function(req, res){
   });
 });
 
-app.post("/compose", function(req, res){
-  const entry = {
+// app.post("/compose", function(req, res){
+//   const entry = {
+//     blogTitle: req.body.title,
+//     blogPost: req.body.post
+//   };
+//   entries.push(entry);
+//   res.redirect("/");
+// });
+
+app.post("/compose", function (req, res) {
+  const entry1 = new Blog ({
     blogTitle: req.body.title,
     blogPost: req.body.post
-  };
-  entries.push(entry);
+  });
+  entry1.save();
+  console.log("Blog saved in DB successfully.");
   res.redirect("/");
 });
-
-
-
-
-
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");

@@ -107,9 +107,14 @@ app.post("/compose", function (req, res) {
     blogTitle: req.body.title,
     blogPost: req.body.post
   });
-  entry1.save();
-  console.log("Blog saved in DB successfully.");
-  res.redirect("/");
+  entry1.save(function (err) {
+    if(err){
+      console.log(err);
+    }else{
+      console.log("Blog saved in DB successfully.");
+      res.redirect("/");
+    }
+  });
 });
 
 app.listen(3000, function() {
